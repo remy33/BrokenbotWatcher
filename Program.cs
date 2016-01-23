@@ -17,7 +17,7 @@ namespace BrokenBotWatcher
         const string BB_PROCESS_NAME             = "BrokenBot";
         const string BB_START_BUTTON_ID          = "BtnStart";
         const string BB_START_BUTTON_START_LABEL = "Start Bot";
-        const int SECOND                         = 1000;
+        const int    SECOND                      = 1000;
 
         static string BB_PATH;
         static int WAIT_INTERVAL;
@@ -65,6 +65,7 @@ namespace BrokenBotWatcher
             if (button.Text == BB_START_BUTTON_START_LABEL)
             {
                 button.Click();
+                Thread.Sleep(3000);
             }
 
             // Change bluestacks priority
@@ -88,13 +89,12 @@ namespace BrokenBotWatcher
 
         private static void ChangeBluestack()
         {
-            var botProcesses = Process.GetProcessesByName(BLUESTACK_PROCESS_NAME);
-
-            if (botProcesses[0] != null)
+            try
             {
+                var botProcesses = Process.GetProcessesByName(BLUESTACK_PROCESS_NAME);
                 botProcesses[0].PriorityClass = APPS_PRIORITY;
             }
-            else
+            catch (Exception)
             {
                 ntIcon.ShowBalloonTip(5000, "Problem", "Can't find blustacks", ToolTipIcon.Error);
             }
