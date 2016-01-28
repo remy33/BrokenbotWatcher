@@ -135,13 +135,31 @@ namespace BrokenBotWatcher
 
                     //Console.WriteLine(Encoding.UTF8.GetString(buf, 0, amountRead));
 
-                    // Echo the result to client
-                    await stream.WriteAsync(buf, 0, amountRead, cancellation.Token)
+                    // Echo the message to client
+                    byte[] sendBytes = CombineByteArray(StringToBuffer("Server has recived: "), buf.Take(amountRead).ToArray());
+                    await stream.WriteAsync(sendBytes, 0, sendBytes.Length, cancellation.Token)
                                 .ConfigureAwait(false);
                 }
 
                 Console.WriteLine("Client ('{0}') disconnected", client.Client.RemoteEndPoint);
             }
+        }
+
+        private byte[] StringToBuffer(string aString)
+        {
+            return Encoding.UTF8.GetBytes(aString);
+        }
+        private string BufferToString(byte[] bytes)
+        {
+            return Encoding.UTF8.GetString(bytes);
+        }
+
+        private byte[] CombineByteArray(byte[] b1, byte[] b2)
+        {
+            byte[] b = new byte[b1.Length + b2.Length];
+            Buffer.BlockCopy(b1, 0, b, 0, b1.Length);
+            Buffer.BlockCopy(b2, 0, b, b1.Length, b2.Length);
+            return b;
         }
 
         #region Upnp Methods
@@ -172,7 +190,7 @@ namespace BrokenBotWatcher
 
         #endregion
 
-        #region MyRegion
+        #region IDisposable
 
         public void Dispose()
         {
